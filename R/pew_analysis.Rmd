@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-The Pew Research Center is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
+The [Pew Research Center](http://www.pewresearch.org) is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
 
 * U.S. Politics & Policy
 * Journalism & Media
@@ -36,6 +36,8 @@ Let's get started!
 
 In order to download raw datasets from Pew, it is necessary to sign up for a Pew account. Thankfully, this is fairly straightforward to do. To do so, navigate to [http://www.pewinternet.org/datasets](http://www.pewinternet.org/datasets). You will see the following page for new users:
 ![](/Users/elliothershberg/Documents/DataCamp/pew_tutorial/Images/Pew_login_screenshot.png)
+
+Go ahead and click the link to sign up for an account, 
 
 ```{r cars}
 2+2
