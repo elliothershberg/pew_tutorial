@@ -10,15 +10,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 The Pew Research Center is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
-        -U.S. Politics & Policy
-        -Journalism & Media
-        -Internet & Technology
-        -Science & Society
-        -Religion & Public Life
-        -Hispanic Trends
-        -Global Attitudes & Trends
-        -Social & Demographic Trends
-        -Research Methodology
+
+* U.S. Politics & Policy
+* Journalism & Media
+* Internet & Technology
+* Science & Society
+* Religion & Public Life
+* Hispanic Trends
+* Global Attitudes & Trends
+* Social & Demographic Trends
+* Research Methodology
 
 That is a wide range of topics! The P.R.C releases high quality datasets pertaining to all nine areas of research. Data scientists rejoice!
 
@@ -33,7 +34,8 @@ Let's get started!
 
 1. Setting up a Pew Account
 
-In order to download raw datasets from Pew, it is necessary to sign up for a Pew account. Thankfully, this is fairly straightforward to do. To do so, navigate to [http://www.pewinternet.org/datasets](http://www.pewinternet.org/datasets)
+In order to download raw datasets from Pew, it is necessary to sign up for a Pew account. Thankfully, this is fairly straightforward to do. To do so, navigate to [http://www.pewinternet.org/datasets](http://www.pewinternet.org/datasets). You will see the following page for new users:
+![](/Users/elliothershberg/Documents/DataCamp/pew_tutorial/Images/Pew_login_screenshot.png)
 
 ```{r cars}
 2+2
