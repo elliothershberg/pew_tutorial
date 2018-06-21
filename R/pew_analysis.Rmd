@@ -1,5 +1,5 @@
 ---
-title: "Pew_Tutorial"
+title: "Pew Tutorial"
 output: html_document
 ---
 
@@ -9,20 +9,46 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The Pew Research Center is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
+        -U.S. Politics & Policy
+        -Journalism & Media
+        -Internet & Technology
+        -Science & Society
+        -Religion & Public Life
+        -Hispanic Trends
+        -Global Attitudes & Trends
+        -Social & Demographic Trends
+        -Research Methodology
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+That is a wide range of topics! The P.R.C releases high quality datasets pertaining to all nine areas of research. Data scientists rejoice!
+
+In this tutorial, we will cover how to:
+
+1. Set up a Pew account, in order to download datasets
+2. Use the **pewdata** R package to read Pew data directly into R
+3. Perform exploratory data analysis using tidy tools
+4. Conduct a tidy hypothesis test using the **infer** package
+
+Let's get started!
+
+1. Setting up a Pew Account
+
+In order to download raw datasets from Pew, it is necessary to sign up for a Pew account. Thankfully, this is fairly straightforward to do. To do so, navigate to [http://www.pewinternet.org/datasets](http://www.pewinternet.org/datasets)
 
 ```{r cars}
-summary(cars)
+2+2
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+
+
+
+
+
+
+
+
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
