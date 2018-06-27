@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Some Background
 
 The [Pew Research Center](http://www.pewresearch.org) is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
 
@@ -21,23 +21,37 @@ The [Pew Research Center](http://www.pewresearch.org) is a nonpartisan fact tank
 * Social & Demographic Trends
 * Research Methodology
 
-That is a wide range of topics! The P.R.C releases high quality datasets pertaining to all nine areas of research. Data scientists rejoice!
+That is a wide range of topics! The P.R.C releases high quality datasets pertaining to all nine areas of research. Data scientists rejoice! However, there is a caveat. Under Pew's [Terms and Conditions](http://www.pewresearch.org/terms-and-conditions), we find that: "any reproduction, display, distribution, broadcast, transmission, or publication of the Data is limited to excerpts and may not be reproduced, displayed, distributed, broadcast, transmitted, or published in full or substantially in full"
+
+Yikes! How can we analyze Pew data in a way that others can reproduce? Luckily, Frederick Solt and Yue Hu have created an R package addressing this problem. Their package, called [**pewdata**](https://CRAN.R-project.org/package=pewdata) allows for the programmatic and reproducible download of Pew datasets without ever needing to leave R!
 
 In this tutorial, we will cover how to:
 
 1. Set up a Pew account, in order to download datasets
-2. Use the **pewdata** R package to read Pew data directly into R
+2. Use the [**pewdata**](https://CRAN.R-project.org/package=pewdata) R package to read Pew data directly into R
 3. Perform exploratory data analysis using tidy tools
 4. Conduct a tidy hypothesis test using the **infer** package
 
 Let's get started!
 
-1. Setting up a Pew Account
+## 1. Setting up a Pew Account
 
 In order to download raw datasets from Pew, it is necessary to sign up for a Pew account. Thankfully, this is fairly straightforward to do. To do so, navigate to [http://www.pewinternet.org/datasets](http://www.pewinternet.org/datasets). You will see the following page for new users:
+
 ![](/Users/elliothershberg/Documents/DataCamp/pew_tutorial/Images/Pew_login_screenshot.png)
 
-Go ahead and click the link to sign up for an account, 
+Go ahead and click the link to sign up for an account, and provide the necessary information to register for a Pew account. With account registration out of the way, let's download a dataset and read it into R!
+
+## 2. Using the pewdata package
+
+
+
+
+
+
+
+
+
 
 ```{r cars}
 2+2
