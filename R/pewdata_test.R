@@ -1,4 +1,5 @@
 library(tidyverse)
+library(infer)
 
 jan_core_trends_survey <- read_csv("January 3-10, 2018 - Core Trends Survey - CSV.csv")
 
@@ -50,6 +51,19 @@ unique(jan_core_trends_survey$web1a)
 
 #calculate average age of twitter users vs. non users
 
+#refactor calculating average ages:
+#currently not working, but I can work on it tomorrow
+
+avg_user_ages <- function(platform) {
+        jan_core_trends_survey %>%
+                select(platform, age) %>%
+                filter(!is.na(platform)) %>%
+                group_by(platform) %>%
+                summarize(avg_age = mean(age))
+}
+
+avg_user_ages(jan_core_trends_survey$web1a)
+
 twitter_age <- jan_core_trends_survey %>%
         select(web1a, age) %>%
         filter(!is.na(web1a)) %>%
@@ -74,10 +88,39 @@ facebook_age <- jan_core_trends_survey %>%
 
 facebook_age
 
+snapchat_age <- jan_core_trends_survey %>%
+        select(web1d, age) %>%
+        filter(!is.na(web1d)) %>%
+        group_by(web1d) %>%
+        summarize(avg_age = mean(age))
+
+snapchat_age
+
+unique(jan_core_trends_survey$web1d)
+
+
+snap_df <- jan_core_trends_survey %>%
+        filter(web1d == 1 | web1d == 2)
+
+unique(snap_df$web1d)
+
+snap_df$web1d <- as.factor(snap_df$web1d)
+
+
+snap_age_plot <- ggplot(snap_df, aes(x = web1d, y = age, group = web1d)) +
+        geom_boxplot()
+
+
+snap_age_plot
+
+## I need to figure out how to fix the boxplot of age by snapchat (user = 1, non-user = 2)
+## Jk I fixed it :)
+## But I need to clean it up and make it look nice, labels, etc.
 
 
 
 
+## Conduct a hypothesis test using infer for diff of means
 
 
 
