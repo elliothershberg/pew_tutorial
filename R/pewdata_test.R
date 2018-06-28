@@ -1,6 +1,9 @@
 library(tidyverse)
+library(plyr)
 library(infer)
 
+
+#in order to read this in, this needs to be in your working directory
 jan_core_trends_survey <- read_csv("January 3-10, 2018 - Core Trends Survey - CSV.csv")
 
 #looking at the rows, and types of data
@@ -31,9 +34,10 @@ age_hist <- ggplot(jan_core_trends_survey, aes(age)) +
 
 age_hist
 
-#interesting, it looks like the distribution is somewhat bimodial, with a peak around 30, and another around 70
+#interesting, it looks like the distribution is skewed left. When you think about it, this is expected for the age of a population
 
-# Please tell me if you ever use any of the following social media sites online or on your cell phone. Do you ever use... [INSERT ITEMS; RANDOMIZE]? {Modified PIAL Trend, most recently April 2016 - Libraries}
+# Please tell me if you ever use any of the following social media sites online or on your cell phone. 
+#Do you ever use... [INSERT ITEMS; RANDOMIZE]? {Modified PIAL Trend, most recently April 2016 - Libraries}
 # a.	Twitter
 # b.	Instagram
 # c.	Facebook 
@@ -47,57 +51,40 @@ age_hist
 # 2	No, do not do this
 # 8	(VOL.) Don't know
 # 	9	(VOL.) Refused
+
 unique(jan_core_trends_survey$web1a)
 
-#calculate average age of twitter users vs. non users
+#Function to calculate average age of users vs. non users
 
-#refactor calculating average ages:
-#currently not working, but I can work on it tomorrow
-
-avg_user_ages <- function(platform) {
-        jan_core_trends_survey %>%
-                select(platform, age) %>%
-                filter(!is.na(platform)) %>%
-                group_by(platform) %>%
-                summarize(avg_age = mean(age))
+avg_user_ages <- function(df, group, var) {
+        group <- enquo(group)
+        var <- enquo(var)
+        df %>%
+                select(!!group, !!var) %>%
+                filter(!is.na(!!group)) %>%
+                group_by(!!group) %>%
+                summarize(avg_age = mean(!!var))
 }
 
-avg_user_ages(jan_core_trends_survey$web1a)
-
-twitter_age <- jan_core_trends_survey %>%
-        select(web1a, age) %>%
-        filter(!is.na(web1a)) %>%
-        group_by(web1a) %>%
-        summarize(avg_age = mean(age))
+twitter_age <- avg_user_ages(jan_core_trends_survey, web1a, age)
 
 twitter_age
 
-instagram_age <- jan_core_trends_survey %>%
-        select(web1b, age) %>%
-        filter(!is.na(web1b)) %>%
-        group_by(web1b) %>%
-        summarize(avg_age = mean(age))
+instagram_age <- avg_user_ages(jan_core_trends_survey, web1b, age)
 
 instagram_age
 
-facebook_age <- jan_core_trends_survey %>%
-        select(web1c, age) %>%
-        filter(!is.na(web1c)) %>%
-        group_by(web1c) %>%
-        summarize(avg_age = mean(age))
+facebook_age <- avg_user_ages(jan_core_trends_survey, web1c, age)
 
 facebook_age
 
-snapchat_age <- jan_core_trends_survey %>%
-        select(web1d, age) %>%
-        filter(!is.na(web1d)) %>%
-        group_by(web1d) %>%
-        summarize(avg_age = mean(age))
+snapchat_age <- avg_user_ages(jan_core_trends_survey, web1d, age)
 
 snapchat_age
 
 unique(jan_core_trends_survey$web1d)
 
+#making a dataframe of snapchat users and non-users and renaming factor
 
 snap_df <- jan_core_trends_survey %>%
         filter(web1d == 1 | web1d == 2)
@@ -106,21 +93,34 @@ unique(snap_df$web1d)
 
 snap_df$web1d <- as.factor(snap_df$web1d)
 
+snap_df$web1d <- revalue(snap_df$web1d, c("1"="user", "2"="non_user"))
 
-snap_age_plot <- ggplot(snap_df, aes(x = web1d, y = age, group = web1d)) +
-        geom_boxplot()
+levels(snap_df$web1d)
 
+detach("package:plyr")
+
+#now I have the data that I want to plot. Here is the plot:
+
+snap_age_plot <- ggplot(snap_df, aes(x = web1d, y = age)) +
+        geom_boxplot() +
+        xlab("Snapchat Usage") +
+        ylab("Age")
 
 snap_age_plot
-
-## I need to figure out how to fix the boxplot of age by snapchat (user = 1, non-user = 2)
-## Jk I fixed it :)
-## But I need to clean it up and make it look nice, labels, etc.
-
-
-
 
 ## Conduct a hypothesis test using infer for diff of means
 
 
+obs_diff <- snapchat_age$avg_age[2] - snapchat_age$avg_age[1]
 
+diff_age_mean <- snap_df %>%
+        specify(age ~ web1d) %>%
+        hypothesize(null = "independence") %>%
+        generate(reps = 10000, type = "permute") %>%
+        calculate(stat = "diff in means", order = c("non_user", "user"))
+
+p <- diff_age_mean %>%
+        filter(stat > obs_diff) %>%
+        summarize(p = n() / 10000)
+
+p
