@@ -1,9 +1,8 @@
 library(tidyverse)
-library(plyr)
 library(infer)
 
-
 #in order to read this in, this needs to be in your working directory
+setwd("~/Documents/Data Science Projects/January 3-10, 2018 - Core Trends Survey")
 jan_core_trends_survey <- read_csv("January 3-10, 2018 - Core Trends Survey - CSV.csv")
 
 #looking at the rows, and types of data
@@ -61,7 +60,7 @@ avg_user_ages <- function(df, group, var) {
         var <- enquo(var)
         df %>%
                 select(!!group, !!var) %>%
-                filter(!is.na(!!group)) %>%
+                filter(!!group == 1 | !!group == 2) %>%
                 group_by(!!group) %>%
                 summarize(avg_age = mean(!!var))
 }
@@ -93,11 +92,9 @@ unique(snap_df$web1d)
 
 snap_df$web1d <- as.factor(snap_df$web1d)
 
-snap_df$web1d <- revalue(snap_df$web1d, c("1"="user", "2"="non_user"))
+snap_df$web1d <- plyr::revalue(snap_df$web1d, c("1"="user", "2"="non_user"))
 
 levels(snap_df$web1d)
-
-detach("package:plyr")
 
 #now I have the data that I want to plot. Here is the plot:
 

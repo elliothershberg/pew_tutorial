@@ -1,5 +1,5 @@
 ---
-title: "Pew Tutorial"
+title: "Tidy Analysis of Pew Research Data Using R"
 output: html_document
 ---
 
@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Some Background
 
-The [Pew Research Center](http://www.pewresearch.org) is a nonpartisan fact tank headquarted in Washington, D.C. Since the centers inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
+The [Pew Research Center](http://www.pewresearch.org) is a nonpartisan fact tank headquarted in Washington, D.C. Since the center's inception in 2004, it has conducted high quality research in several areas. The P.R.C. currently focuses on nine areas:
 
 * U.S. Politics & Policy
 * Journalism & Media
@@ -26,7 +26,7 @@ That is a wide range of topics! The P.R.C releases high quality datasets pertain
 In this tutorial, we will cover how to:
 
 1. Set up a Pew account, in order to download datasets
-2. Reading data into R
+2. Read the data into R
 3. Perform exploratory data analysis using tidy tools
 4. Conduct a tidy hypothesis test using the **infer** package
 
@@ -41,4 +41,180 @@ In order to download raw datasets from Pew, it is necessary to sign up for a Pew
 Go ahead and click the link to sign up for an account, and provide the necessary information to register for a Pew account. With account registration out of the way, let's download a dataset and read it into R!
 
 ## 2. Reading Data into R
+
+In this tutorial, we're going to explore the [Jan. 3-10, 2018 -Core Trends Survey](http://www.pewinternet.org/dataset/jan-3-10-2018-core-trends-survey/) from the [Internet & Tech](http://www.pewinternet.org/) section. When you download the dataset, you will get the following folder:
+
+![](/Users/elliothershberg/Documents/DataCamp/pew_tutorial/Images/Pew_data_screenshot.png)
+
+This folder contains the survey data in several formats. For the purpose of this tutorial, we are interested in the .csv file, and the word document containing information about the survey questionnaire. Let's read the data into R:
+
+```{r message=FALSE, warning=FALSE}
+#First, load the following packages (if you don't have them, use the install.packages() function)
+library(tidyverse)
+library(infer)
+```
+
+```{r eval= FALSE}
+#Next, set your working directory to where your Pew data lives, and read it into R
+setwd("~/<Your File Path Here>/January 3-10, 2018 - Core Trends Survey")
+jan_core_trends_survey <- read_csv("January 3-10, 2018 - Core Trends Survey - CSV.csv")
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+setwd("~/Documents/Data Science Projects/January 3-10, 2018 - Core Trends Survey")
+jan_core_trends_survey <- read_csv("January 3-10, 2018 - Core Trends Survey - CSV.csv")
+```
+## 3. Perform exploratory data analysis using tidy tools
+
+Now that we have read the data into R, let's examine it a bit:
+
+```{r}
+
+nrow(jan_core_trends_survey)
+length(jan_core_trends_survey)
+
+```
+
+The dataset consists of 2002 observations, each with 70 variables. That is a large number of variables. It may be time to consult the questionnaire in order to better understand what types of data were recorded in this survey. This was a telephone opinion survey, where respondents were asked a series of questions about their technology usage, and views about technology. Additional questions to obtain data such as age, and educational attainment were asked as well. In the questionnaire, names for the columns corresponding to questions are provided. For example, answers to the question "Do you use the internet or email, at least occasionally?" are stored in the **eminuse** column. Let's see what this looks like:
+
+```{r}
+#what values are stored in the eminuse column?
+unique(jan_core_trends_survey$eminuse)
+
+#first 10 values of age column
+head(jan_core_trends_survey$age)
+
+```
+
+Well, the age looks like we would expect it to, but what do the values in the **eminuse** column represent?
+
+Looking at the questionnaire, we see that there is a key for values corresponding which answers they represent:
+
+* 1 = Yes
+* 2 = No
+* 8 = (VOL.) Don't know
+* 9 = (VOL.) Refused
+
+The values in the **eminuse** column make a lot more sense now! Now that we are getting a better feel for the structure of the data, let's take a look at the distribution of ages in the dataset:
+
+```{r}
+
+ggplot(jan_core_trends_survey, aes(age)) +
+        geom_histogram(bins = 20)
+
+```
+
+It looks like the distribution of ages in the dataset is skewed to the left. Does that makes sense when considering what the distribution of ages in the overall population is? Yes! At a given time, a higher proportion of the population is younger, which is in line with our histogram above.
+
+Moving on, there is an interesting series of columns labeled web1a-web1h (ex. web1a, web1b, ...) that represents respondents answers to the following question: "Please tell me if you ever use any of the following social media sites online or on your cell phone." Where:
+
+* web1a = Twitter
+* web1b = Instagram
+* web1c = Facebook
+* web1d = Snapchat
+
+Let's explore this a little bit. Here is a function to calculate the average ages of users and non-users of these different social media platforms:
+
+```{r}
+
+avg_user_ages <- function(df, group, var) {
+        #this step is necessary for tidy evaluation
+        group <- enquo(group)
+        var <- enquo(var)
+        df %>%
+                select(!!group, !!var) %>%
+                ## we are only looking for 1 (user), or 2 (non-user)
+                filter(!!group == 1 | !!group == 2) %>%
+                group_by(!!group) %>%
+                summarize(avg_age = mean(!!var))
+}
+
+```
+
+You may be unfamiliar with some of the syntax in this function. This is because dplyr functions use tidy evaluation. Excellent documentation for reading more about how tidy evaluation works can be found [here](https://dplyr.tidyverse.org/articles/programming.html).
+
+Using this function, we see:
+
+```{r}
+
+twitter_age <- avg_user_ages(jan_core_trends_survey, web1a, age)
+
+twitter_age
+
+instagram_age <- avg_user_ages(jan_core_trends_survey, web1b, age)
+
+instagram_age
+
+facebook_age <- avg_user_ages(jan_core_trends_survey, web1c, age)
+
+facebook_age
+
+snapchat_age <- avg_user_ages(jan_core_trends_survey, web1d, age)
+
+snapchat_age
+
+```
+
+
+Interesting! Perhaps as expected, the average ages for users of all four platforms were substantially lower than their non-user counterparts. For Snapchat, the averages differ by 20 years!!
+
+We can use ggplot to visualize the relationship between age and Snapchat usage:
+
+```{r}
+
+#making a dataframe of snapchat users
+snap_df <- jan_core_trends_survey %>%
+        filter(web1d == 1 | web1d == 2)
+
+#converting the column to a factor, and renaming the factors
+snap_df$web1d <- as.factor(snap_df$web1d)
+snap_df$web1d <- plyr::revalue(snap_df$web1d, c("1"="user", "2"="non_user"))
+
+#taking a look at the new names
+levels(snap_df$web1d)
+
+#creating and showing a boxplot of ages between users and non-users
+snap_age_plot <- ggplot(snap_df, aes(x = web1d, y = age)) +
+        geom_boxplot() +
+        xlab("Snapchat Usage") +
+        ylab("Age")
+
+snap_age_plot
+
+```
+
+## 4. Conduct a tidy hypothesis test using the **infer** package
+
+Wow, it looks like the average Snapchat user is **far** younger than the average non-user. How likely is it that this large of a difference in means is due to chance? Let's conduct a hypothesis test! [Andrew Bray](https://andrewpbray.github.io/) has created an awesome R package for tidy statistical inference called **infer**, which we loaded earlier. The package allows for a hypothesis to be specify and tested in a series of steps: 1) Specify 2) Hypothesize 3) generate 4) calculate. Here is what it looks like in practice:
+
+```{r}
+
+#first, we calculate and store the observed difference in mean in our dataset
+obs_diff <- snapchat_age$avg_age[2] - snapchat_age$avg_age[1]
+
+diff_age_mean <- snap_df %>%
+        #specify hypothesis as a formuala y ~ x
+        specify(age ~ web1d) %>%
+        #snapchat usage has no relationship with age
+        hypothesize(null = "independence") %>%
+        #10,000 permutations of these data
+        generate(reps = 10000, type = "permute") %>%
+        #calculate the statistic of interest for the 10,000 reps
+        calculate(stat = "diff in means", order = c("non_user", "user"))
+
+#take a look at the output
+head(diff_age_mean)
+
+#how many of the 10,000 reps are MORE extreme than the observed value?
+p <- diff_age_mean %>%
+        filter(stat > obs_diff) %>%
+        summarize(p = n() / 10000)
+
+p
+
+```
+
+It looks like 0 of the 10,000 replicates of the difference in means were as extreme as the observed. We can interpret this to mean that the probability that the observed relationship between Snapchat usage and age is do to chance is EXTREMELY low.
+
+That's all for this tutorial! I hope that you enjoyed exploring data about social media usage from the Pew Research Center, and I encourage you to explore more of their awesome data and see what you can find. Happy coding!
 
