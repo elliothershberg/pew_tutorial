@@ -9,6 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Elliot Hershberg" />
 
 
 <title>Tidy Analysis of Pew Research Data Using R</title>
@@ -118,6 +119,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Tidy Analysis of Pew Research Data Using R</h1>
+<h4 class="author"><em>Elliot Hershberg</em></h4>
 
 </div>
 
@@ -293,12 +295,12 @@ head(diff_age_mean)</code></pre>
 <pre><code>## # A tibble: 6 x 2
 ##   replicate    stat
 ##       &lt;int&gt;   &lt;dbl&gt;
-## 1         1  0.0319
-## 2         2 -0.418 
-## 3         3  0.389 
-## 4         4 -0.277 
-## 5         5 -0.943 
-## 6         6  0.808</code></pre>
+## 1         1  0.0722
+## 2         2  0.663 
+## 3         3 -0.903 
+## 4         4 -1.11  
+## 5         5  0.0492
+## 6         6 -0.678</code></pre>
 <pre class="r"><code>#how many of the 10,000 reps are MORE extreme than the observed value?
 p &lt;- diff_age_mean %&gt;%
         filter(stat &gt; obs_diff) %&gt;%
@@ -309,7 +311,37 @@ p</code></pre>
 ##       p
 ##   &lt;dbl&gt;
 ## 1     0</code></pre>
-<p>It looks like 0 of the 10,000 replicates of the difference in means were as extreme as the observed. We can interpret this to mean that the probability that the observed relationship between Snapchat usage and age is do to chance is EXTREMELY low.</p>
+<p>It looks like 0 of the 10,000 replicates of the difference in means were as extreme as the observed. We can interpret this to mean that the probability that the observed relationship between Snapchat usage and age is do to chance is EXTREMELY low. However, testing against the null hypothesis that the difference in means between ages is 0 doesn’t provide us with a ton of informationon its own. If the difference in means isn’t 0, what is it? To answer this, let’s construct a bootstrap confidence interval of the differences in means using <strong>infer</strong>:</p>
+<pre class="r"><code>age_mean_conf &lt;- snap_df %&gt;%
+        #same formula as before
+        specify(age ~ web1d) %&gt;%  
+        #notice that we are now taking the bootstrap rather than permutations 
+        generate(reps = 10000, type = &quot;bootstrap&quot;) %&gt;% 
+        #Calculate difference in means of each bootstrap sample
+        calculate(stat = &quot;diff in means&quot;, order = c(&quot;non_user&quot;, &quot;user&quot;))
+
+#Take a peak at the results of this code
+head(age_mean_conf)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   replicate  stat
+##       &lt;int&gt; &lt;dbl&gt;
+## 1         1  21.0
+## 2         2  20.2
+## 3         3  20.4
+## 4         4  19.7
+## 5         5  20.9
+## 6         6  20.8</code></pre>
+<pre class="r"><code>#Now calculate the 95$ confidence interval for the statistic
+age_mean_conf %&gt;%
+        summarize(lower = quantile(stat, 0.025),
+                  upper = quantile(stat, 0.975))</code></pre>
+<pre><code>## Response: age (integer)
+## Explanatory: web1d (factor)
+## # A tibble: 1 x 2
+##   lower upper
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  18.3  22.1</code></pre>
+<p>We can interpret this by saying that we are 95% confident the difference in mean ages of Snapchat users vs. non-users is between 18.3 and 22.1 years. That is an interesting find!</p>
 <p>That’s all for this tutorial! I hope that you enjoyed exploring data about social media usage from the Pew Research Center, and I encourage you to explore more of their awesome data and see what you can find. Happy coding!</p>
 </div>
 

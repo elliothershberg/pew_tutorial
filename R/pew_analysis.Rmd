@@ -1,5 +1,6 @@
 ---
 title: "Tidy Analysis of Pew Research Data Using R"
+author: "Elliot Hershberg"
 output: html_document
 ---
 
@@ -214,7 +215,29 @@ p
 
 ```
 
-It looks like 0 of the 10,000 replicates of the difference in means were as extreme as the observed. We can interpret this to mean that the probability that the observed relationship between Snapchat usage and age is do to chance is EXTREMELY low.
+It looks like 0 of the 10,000 replicates of the difference in means were as extreme as the observed. We can interpret this to mean that the probability that the observed relationship between Snapchat usage and age is do to chance is EXTREMELY low. However, testing against the null hypothesis that the difference in means between ages is 0 doesn't provide us with a ton of informationon its own. If the difference in means isn't 0, what is it? To answer this, let's construct a bootstrap confidence interval of the differences in means using **infer**:
+
+```{r}
+
+age_mean_conf <- snap_df %>%
+        #same formula as before
+        specify(age ~ web1d) %>%  
+        #notice that we are now taking the bootstrap rather than permutations 
+        generate(reps = 10000, type = "bootstrap") %>% 
+        #Calculate difference in means of each bootstrap sample
+        calculate(stat = "diff in means", order = c("non_user", "user"))
+
+#Take a peak at the results of this code
+head(age_mean_conf)
+
+#Now calculate the 95$ confidence interval for the statistic
+age_mean_conf %>%
+        summarize(lower = quantile(stat, 0.025),
+                  upper = quantile(stat, 0.975))
+
+```
+
+We can interpret this by saying that we are 95% confident the difference in mean ages of Snapchat users vs. non-users is between 18.3 and 22.1 years. That is an interesting find!
 
 That's all for this tutorial! I hope that you enjoyed exploring data about social media usage from the Pew Research Center, and I encourage you to explore more of their awesome data and see what you can find. Happy coding!
 

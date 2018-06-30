@@ -121,3 +121,18 @@ p <- diff_age_mean %>%
         summarize(p = n() / 10000)
 
 p
+
+age_mean_conf <- snap_df %>%
+        # Specify the variable of interest
+        specify(age ~ web1d) %>%  
+        # Generate 15000 bootstrap samples
+        generate(reps = 10000, type = "bootstrap") %>% 
+        # Calculate the median of each bootstrap sample
+        calculate(stat = "diff in means", order = c("non_user", "user"))
+
+head(age_mean_conf)
+
+age_mean_conf %>%
+        summarize(lower = quantile(stat, 0.025),
+                  upper = quantile(stat, 0.975))
+
