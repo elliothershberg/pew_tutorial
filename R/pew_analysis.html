@@ -293,14 +293,14 @@ diff_age_mean &lt;- snap_df %&gt;%
 #take a look at the output
 head(diff_age_mean)</code></pre>
 <pre><code>## # A tibble: 6 x 2
-##   replicate    stat
-##       &lt;int&gt;   &lt;dbl&gt;
-## 1         1 -0.158 
-## 2         2 -0.184 
-## 3         3  1.74  
-## 4         4 -1.19  
-## 5         5 -0.0201
-## 6         6 -0.539</code></pre>
+##   replicate   stat
+##       &lt;int&gt;  &lt;dbl&gt;
+## 1         1 -0.343
+## 2         2  1.04 
+## 3         3 -0.975
+## 4         4 -2.15 
+## 5         5 -1.89 
+## 6         6 -1.52</code></pre>
 <pre class="r"><code>#how many of the 10,000 reps are MORE extreme than the observed value?
 p &lt;- diff_age_mean %&gt;%
         filter(stat &gt; obs_diff) %&gt;%
@@ -325,12 +325,12 @@ head(age_mean_conf)</code></pre>
 <pre><code>## # A tibble: 6 x 2
 ##   replicate  stat
 ##       &lt;int&gt; &lt;dbl&gt;
-## 1         1  19.4
-## 2         2  19.8
-## 3         3  19.5
-## 4         4  20.9
-## 5         5  20.3
-## 6         6  19.0</code></pre>
+## 1         1  21.2
+## 2         2  20.3
+## 3         3  20.6
+## 4         4  19.3
+## 5         5  20.7
+## 6         6  20.1</code></pre>
 <pre class="r"><code>#Now calculate the 95$ confidence interval for the statistic
 age_mean_conf %&gt;%
         summarize(lower = quantile(stat, 0.025),
@@ -340,10 +340,10 @@ age_mean_conf %&gt;%
 ## # A tibble: 1 x 2
 ##   lower upper
 ##   &lt;dbl&gt; &lt;dbl&gt;
-## 1  18.4  22.2</code></pre>
+## 1  18.4  22.1</code></pre>
 <p>We can interpret this by saying that we are 95% confident the difference in mean ages of Snapchat users vs. non-users is between 18.3 and 22.1 years. That is an interesting find!</p>
 <p>Let’s recap what we’ve covered. First, we gained some background information about the Pew Research Center, and how to set up a Pew account in order to download their high quality data. Next, with the data dowloaded, we took a look at how to read the data into R, and explore its structure. With the data in R, and an understanding of its basic structure, I showed how some simple visualizations could help to construct a hypothesis to test using the data. The question was: how does the average age differ between snapchat users and non-users. This question was coded up using the infer package. We learned that Snapchat users are on average between 18.3 and 22.1 years younger than people who aren’t on the platform!</p>
-<p>That’s all for this tutorial! I hope that you enjoyed exploring data about social media usage from the Pew Research Center, and I encourage you to explore more of their awesome data and see what you can find. If you enjoyed this tutorial and have interest in politics, take a look at <a href="https://andrewpbray.github.io/">this new article</a> from the Pew Center analyzing changes in the views of confirmed voters over time. Happy coding!</p>
+<p>That’s all for this tutorial! I hope that you enjoyed exploring data about social media usage from the Pew Research Center, and I encourage you to explore more of their awesome data and see what you can find. If you enjoyed this tutorial and have interest in politics, take a look at <a href="http://www.people-press.org/2018/08/09/an-examination-of-the-2016-electorate-based-on-validated-voters/">this new article</a> from the Pew Center analyzing changes in the views of confirmed voters over time. Happy coding!</p>
 </div>
 
 
